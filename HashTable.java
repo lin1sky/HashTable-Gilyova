@@ -3,13 +3,13 @@ public class HashTable implements Table {
     private String[] keys;
     private String[] values;
     private int size;
-    private final int capacity;
+    private int maxSize;
     private static final String deleted = "deleted";  // Маркер удалённой ячейки
 
     public HashTable() {
-        capacity = 20;
-        keys = new String[capacity];
-        values = new String[capacity];
+        maxSize = 20;
+        keys = new String[maxSize];
+        values = new String[maxSize];
         size = 0;
     }
 
@@ -20,7 +20,7 @@ public class HashTable implements Table {
     @Override
     public void put(String key, String value) {
         if (size>= keys.length) {
-            return;
+            resize();
         }
         int index = hash(key);
         for(int i = 0; i<keys.length; i++){
@@ -74,5 +74,20 @@ public class HashTable implements Table {
     @Override
     public int size() {
         return size;
+    }
+    
+    private void resize(){
+        int newSize = maxSize * 2;
+        String[] oldKeys = keys;
+        String[] oldValues = values;
+        keys = new String[newSize];
+        values = new String[newSize];
+        size = 0;
+
+        for (int i = 0; i < oldKeys.length; i++){
+            if (oldKeys[i] != null && oldKeys[i] != deleted){
+                put(oldKeys[i], oldValues[i]);
+            }
+        }
     }
 }
